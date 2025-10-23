@@ -45,18 +45,11 @@ import requests, folium
 from streamlit_folium import st_folium
 import streamlit as st
 
-API_URL = "https://api.my-iot-server.com/latest"  # Your endpoint
-data = requests.get(API_URL).json()  # e.g. [{"lat":-36.85,"lon":174.76,"temp":22.3}, ...]
+lat, lon = -36.8485, 174.7633
+r = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true")
+temp = r.json()["current_weather"]["temperature"]
 
-m = folium.Map(location=[-36.85,174.76], zoom_start=11)
-for point in data:
-    folium.CircleMarker(
-        [point["lat"], point["lon"]],
-        radius=10,
-        popup=f"Temp: {point['temp']} °C",
-        color="blue" if point["temp"]<25 else "red",
-        fill=True
-    ).add_to(m)
-
+m = folium.Map(location=[lat, lon], zoom_start=12)
+folium.Marker([lat, lon], popup=f"Current Temp: {temp} °C").add_to(m)
 st_folium(m, width=900, height=600)
 
