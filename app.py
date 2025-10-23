@@ -40,3 +40,23 @@ if st_data and st_data["last_clicked"]:
 
 st.markdown("---")
 st.caption("Prototype created by Armin Baghaei • Streamlit + Folium + GitHub Cloud Deployment")
+
+import requests, folium
+from streamlit_folium import st_folium
+import streamlit as st
+
+API_URL = "https://api.my-iot-server.com/latest"  # Your endpoint
+data = requests.get(API_URL).json()  # e.g. [{"lat":-36.85,"lon":174.76,"temp":22.3}, ...]
+
+m = folium.Map(location=[-36.85,174.76], zoom_start=11)
+for point in data:
+    folium.CircleMarker(
+        [point["lat"], point["lon"]],
+        radius=10,
+        popup=f"Temp: {point['temp']} °C",
+        color="blue" if point["temp"]<25 else "red",
+        fill=True
+    ).add_to(m)
+
+st_folium(m, width=900, height=600)
+
